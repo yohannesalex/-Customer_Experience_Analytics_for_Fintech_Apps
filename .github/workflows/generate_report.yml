@@ -1,0 +1,33 @@
+name: Generate Interim Report
+
+on:
+  workflow_dispatch:  # Allows manual triggering
+  schedule:
+    - cron: '0 0 * * *'  # Runs daily at midnight (optional)
+
+jobs:
+  generate-report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+
+      - name: Install Dependencies
+        run: |
+          pip install pandas matplotlib seaborn textblob python-docx
+          sudo apt-get install -y pandoc texlive-xetex
+
+      - name: Generate Report
+        run: |
+          python scripts/generate_report.py
+
+      - name: Upload Report
+        uses: actions/upload-artifact@v2
+        with:
+          name: interim-report
+          path: reports/interim_report.pdf
